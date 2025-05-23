@@ -1,0 +1,85 @@
+import Conversation from "../models/conversation.model.js";
+import Message from "../models/message.model.js";
+import jwt from "jsonwebtoken";
+
+export const sendMessage = async (req, res) => {
+  try {
+    const { message } = req.body;
+    const { id: reciverId } = req.params;
+    // const senderId = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET).id;
+    const senderId = req.user._id; //as i have set in protect route
+    
+
+    if (!senderId || !reciverId) {
+      return res.status(400).json({
+        message: "Sender or receiver ID is missing",
+        success: false,
+      });
+    }
+
+    if (!message) {
+      return res.status(400).json({
+        message: "Message content is required",
+        success: false,
+      });
+    }
+
+    let conversation = await Conversation.findOne({
+      participants: {
+        $all: [senderId, reciverId],
+      },
+    });
+
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [senderId, reciverId],
+        //messages will be empty array automatically as we set in models
+      });
+    }
+    const newMessage = new Message({
+      sender: senderId,
+      receiver: reciverId,
+      message,
+    });
+    if (newMessage) {
+      conversation.messages.push(newMessage._id);
+      await Promise.all([conversation.save(), newMessage.save()]);
+    }
+
+    //SOCKET IO Functionality
+
+    res.status(200).json({
+      message: "Message sent successfully",
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+      error: true,
+    });
+  }
+};
+
+export const getMessages = async (req, res) => {
+  try {
+    const { id: userToChatId } = req.params;
+    const senderId = req.user._id;
+    const conversation = await Conversation.findOne({
+      participants: { $all: [senderId, userToChatId] },
+    }).populate("messages");
+    if (!conversation) {
+      return res.status(404).json({
+        message: error.message,
+      });
+    }
+    const messages = conversation.messages;
+
+    res.status(200).json(messages);
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+      error: true,
+    });
+  }
+};
