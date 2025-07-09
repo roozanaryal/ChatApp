@@ -12,45 +12,50 @@ const useSignup = () => {
       confirmPassword,
       gender,
    }) => {
-      const success = handleInputErrors({
-         fullName,
-         username,
-         password,
-         confirmPassword,
-         gender,
-      });
-      if (!success) return;
       setLoading(true);
-
       try {
+         // All validation is now handled by handleInputErrors, which throws on failure
+         handleInputErrors({
+            fullName,
+            username,
+            password,
+            confirmPassword,
+            gender,
+         });
+
+         // Make the API request
          const res = await fetch("/api/auth/signup", {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
             },
             body: JSON.stringify({
-               fullName,
-               username,
+               fullName: fullName.trim(),
+               username: username.trim().toLowerCase(),
                password,
                confirmPassword,
                gender,
             }),
          });
-         const data = await res.json();
-         if (data.error) {
-            throw new Error(data.error);
-         }
-         console.log(data);
-         localStorage.setItem("chat-user", JSON.stringify(data));
 
-         setAuthUser(data);
-         if (data.success) {
-            toast.success("User created successfully");
-         } else {
-            toast.error(data.message);
+         const data = await res.json();
+
+         if (!res.ok) {
+            throw new Error(data.error || 'Registration failed. Please try again.');
          }
+
+         if (!data || !data._id) {
+            throw new Error('Invalid response from server');
+         }
+
+         localStorage.setItem("chat-user", JSON.stringify(data));
+         setAuthUser(data);
+
+         toast.success("Account created successfully!");
+
+         return data;
       } catch (error) {
-         toast.error(error.message);
+         toast.error(error.message || 'An error occurred during registration');
       } finally {
          setLoading(false);
       }
@@ -67,13 +72,23 @@ function handleInputErrors({
    confirmPassword,
    gender,
 }) {
-   if (!fullName || !username || !password || !confirmPassword || !gender) {
-      toast.error("All fields are required");
-      return false;
+   if (!fullName?.trim() || !username?.trim() || !password || !confirmPassword || !gender) {
+      throw new Error("All fields are required");
    }
-   if (password != confirmPassword) {
-      toast.error("Passwords do not match");
-      return false;
+
+   if (password !== confirmPassword) {
+      throw new Error("Passwords do not match");
    }
-   return true;
+
+   if (password.length < 6) {
+      throw new Error("Password must be at least 6 characters long");
+   }
+
+   if (username.length < 3) {
+      throw new Error("Username must be at least 3 characters long");
+   }
+
+   if (fullName.trim().length < 2) {
+      throw new Error("Please enter a valid full name");
+   }
 }

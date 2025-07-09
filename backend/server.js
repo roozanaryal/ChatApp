@@ -19,5 +19,5 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/user", userRoutes);
 app.listen(PORT, () => {
   connectDB();
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server is running on port ${PORT}`) ;
 });

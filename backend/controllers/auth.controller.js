@@ -28,30 +28,26 @@ export const signup = async (req, res) => {
 
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
-    const user = new User({
+    const newUser = new User({
       fullName,
       username,
       password: hashedPassword,
       gender,
       profilePic: gender === "male" ? boyProfilePic : girlProfilePic,
     });
-    if (user) {
-      generateTokenAndSetCookie(user._id, res);
-      await user.save();
+
+    if (newUser) {
+      await newUser.save();
+      generateTokenAndSetCookie(newUser._id, res);
+
       res.status(201).json({
-        message: "User created successfully",
-        _id: user._id,
-        fullName: user.fullName,
-        username: user.username,
-        gender: user.gender,
-        profilePic: user.profilePic,
+        _id: newUser._id,
+        fullName: newUser.fullName,
+        username: newUser.username,
+        profilePic: newUser.profilePic,
       });
     } else {
-      res.status({
-        message: "User not created",
-        success: false,
-        error: true,
-      });
+      res.status(400).json({ error: "Invalid user data" });
     }
   } catch (error) {
 
@@ -87,7 +83,7 @@ export const login = async (req, res) => {
       });
     }
 
-    generateTokenAndSetCookie(user._id, res);
+    // generateTokenAndSetCookie(user._id, res);
 
     console.log(req.cookies.jwt)
 
