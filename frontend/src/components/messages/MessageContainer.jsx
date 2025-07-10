@@ -1,7 +1,8 @@
-import React from "react"; // useState is not needed if using Zustand for selectedChat
+import React, { useEffect } from "react"; // useState is not needed if using Zustand for selectedChat
 import Messages from "./Messages";
 import MessageInput from "./MessageInput";
 import useConversation from "../../zustand/useConversation"; // Correct path
+// import { set } from "mongoose";
 
 const MessageContainer = () => {
   // Correct way to use the Zustand hook:
@@ -15,6 +16,10 @@ const MessageContainer = () => {
   // for readability within this component, you can alias them:
   const selectedChat = selectedConversation;
   // const setSelectedChat = setSelectedConversation; // You don't actually use setSelectedChat here, so it's not strictly necessary to alias it.
+  useEffect(() => {
+    //cleanup function to reset selected chat when component unmounts
+    return () => setSelectedConversation(null);
+  }, [setSelectedConversation]);
 
   return (
     <div className="flex flex-col h-full rounded-lg shadow-lg bg-gray-800 text-white">
