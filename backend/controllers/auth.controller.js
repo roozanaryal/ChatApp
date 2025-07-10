@@ -83,7 +83,7 @@ export const login = async (req, res) => {
       });
     }
 
-    // generateTokenAndSetCookie(user._id, res);
+    generateTokenAndSetCookie(user._id, res);
 
     console.log(req.cookies.jwt)
 

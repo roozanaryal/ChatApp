@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import toast from "react-hot-toast";
-
+import { baseUrl } from "./useSignup";
 export default function useGetConversation() {
   const [loading, setLoading] = useState(false);
   const [conversations, setConversations] = useState([]);
@@ -9,11 +9,12 @@ export default function useGetConversation() {
     const getConversation = async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/users");
+        const res = await fetch(`${baseUrl}/api/users`);
         const data = await res.json();
         if (data.error) {
           throw new Error(data.error);
         }
+        setConversations(data);
       } catch (error) {
         toast(error.message);
       } finally {
