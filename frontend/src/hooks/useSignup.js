@@ -49,6 +49,10 @@ const useSignup = () => {
             throw new Error('Invalid response from server');
          }
 
+         // Store token separately if present
+         if (data.token) {
+           localStorage.setItem("chat-token", data.token);
+         }
          localStorage.setItem("chat-user", JSON.stringify(data));
          setAuthUser(data);
 

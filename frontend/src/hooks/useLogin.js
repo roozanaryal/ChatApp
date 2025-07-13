@@ -34,16 +34,24 @@ const useLogin = () => {
       if (!data || !data._id) {
         throw new Error("Invalid response from server");
       }
+      console.log(data);
+      // Store token separately if present
+      const { token, ...userData } = data;
+
+      // Store token separately if present
+      if (token) {
+        localStorage.setItem("chat-token", token);
+      }
 
       // Store user data in localStorage and context
-      localStorage.setItem("chat-user", JSON.stringify(data));
-      setAuthUser(data);
+      localStorage.setItem("chat-user", JSON.stringify(userData));
+      setAuthUser(userData);
 
       // Show success message
       toast.success("Successfully logged in!");
 
       // Return the user data in case it's needed
-      return data;
+      return userData;
     } catch (error) {
       // Log the error for debugging
       console.error("Login error:", error);

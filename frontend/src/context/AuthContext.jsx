@@ -1,13 +1,20 @@
-import { createContext, useState, useContext } from "react";
-
-export const AuthContext = createContext();
-
+// Stub context to avoid import errors after removing useAuthStore.js
 export const useAuthContext = () => {
-    return useContext(AuthContext);
-}
-export const AuthContextProvider = ({ children }) => {
-    const [authUser, setAuthUser] = useState(JSON.parse(localStorage.getItem("chat-user"))  || null);
-    return <AuthContext.Provider value={{authUser, setAuthUser}}>
-        {children}
-    </AuthContext.Provider>;
+  const getInitialUser = () => {
+    try {
+      return JSON.parse(localStorage.getItem('chat-user')) || null;
+    } catch {
+      return null;
+    }
+  };
+  const setAuthUser = (user) => {
+    if (user) {
+      localStorage.setItem('chat-user', JSON.stringify(user));
+    } else {
+      localStorage.removeItem('chat-user');
+    }
+  };
+  return { authUser: getInitialUser(), setAuthUser };
 };
+
+export const AuthContextProvider = ({ children }) => children;

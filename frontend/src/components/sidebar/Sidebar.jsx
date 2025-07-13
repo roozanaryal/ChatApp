@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useAuthContext } from "../../context/AuthContext";
+import useConversation from "../../zustand/useConversation";
 import SearchInput from "./SearchInput";
 import Conversation from "./Conversation";
 import useGetConversation from "../../hooks/useGetConversation"
@@ -12,7 +12,7 @@ const Sidebar = ({ onSelectChat }) => {
   // This would be replaced with actual data from your backend
 
   const [selectedConversation, setSelectedConversation] = useState(null);
-  const { setAuthUser } = useAuthContext();
+  const { authUser, setAuthUser } = useConversation();
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -60,10 +60,10 @@ const Sidebar = ({ onSelectChat }) => {
       <div className="p-4 border-t border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-            <span className="text-sm font-medium text-white">JD</span>
+            <span className="text-sm font-medium text-white">{authUser?.fullName || authUser?.username[0].toUpperCase()}</span>
           </div>
           <div className="flex-1">
-            <h3 className="text-sm font-medium text-white">John Doe</h3>
+            <h3 className="text-sm font-medium text-white">{authUser?.fullName || authUser?.username}</h3>
             <p className="text-xs text-gray-400">My Account</p>
           </div>
           <button

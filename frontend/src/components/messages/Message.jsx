@@ -1,12 +1,25 @@
 import React from "react";
+import { useAuthContext } from "../../context/AuthContext";
+import useConversation from "../../zustand/useConversation";
 
 const Message = ({ message }) => {
-  const isSender = message.senderId === "currentUser"; // This would be replaced with actual logic
+  const { authUser } = useAuthContext();
+  const { selectedConversation } = useConversation();
+  const isSender = message.senderId === authUser._id;
+  const chatMate = isSender ? authUser : selectedConversation;
+  const chatTime = new Date(message.createdAt).toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
-  return isSender ? <SentMessage message={message} /> : <ReceivedMessage message={message} />;
+  return isSender ? (
+    <SentMessage message={message} time={chatTime} />
+  ) : (
+    <ReceivedMessage message={message} time={chatTime} user={chatMate} />
+  );
 };
 
-const SentMessage = ({ message }) => {
+const SentMessage = ({ message, time }) => {
   return (
     <div className="flex items-start gap-2.5 flex-row-reverse">
       <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
@@ -14,7 +27,7 @@ const SentMessage = ({ message }) => {
       </div>
       <div className="flex flex-col gap-1 items-end min-w-0 max-w-[80%]">
         <div className="flex items-center gap-2">
-          <span className="text-gray-400 text-xs">{message.time}</span>
+          <span className="text-gray-400 text-xs">{time}</span>
           <span className="text-white text-sm font-medium">You</span>
         </div>
         <div className="bg-gradient-to-r from-purple-600 to-fuchsia-600 px-4 py-2 rounded-2xl rounded-tr-none text-white text-sm">
@@ -25,16 +38,16 @@ const SentMessage = ({ message }) => {
   );
 };
 
-const ReceivedMessage = ({ message }) => {
+const ReceivedMessage = ({ message, time, user }) => {
   return (
     <div className="flex items-start gap-2.5">
       <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-        <span className="text-sm font-medium text-white">{message.senderInitials || "JD"}</span>
+        <img src={user?.profilePic} alt="user avatar" className="w-full h-full rounded-full object-cover" />
       </div>
       <div className="flex flex-col gap-1 min-w-0 max-w-[80%]">
         <div className="flex items-center gap-2">
-          <span className="text-white text-sm font-medium">{message.senderName}</span>
-          <span className="text-gray-400 text-xs">{message.time}</span>
+          <span className="text-white text-sm font-medium">{user?.fullName}</span>
+          <span className="text-gray-400 text-xs">{time}</span>
         </div>
         <div className="bg-white/10 px-4 py-2 rounded-2xl rounded-tl-none text-white text-sm">
           {message.text}

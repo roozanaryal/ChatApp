@@ -1,49 +1,18 @@
-import React from "react";
 import Message from "./Message";
 
-const Messages = ({ selectedChat }) => {
-  // This would be replaced with actual messages from props or state
-  const demoMessages = [
-    {
-      id: 1,
-      senderId: "john",
-      senderName: "John Doe",
-      senderInitials: "JD",
-      text: "Hey! How are you doing?",
-      time: "2:30 PM"
-    },
-    {
-      id: 2,
-      senderId: "currentUser",
-      senderName: "You",
-      text: "I'm doing great! Thanks for asking. How about you?",
-      time: "2:31 PM"
-    },
-    {
-      id: 3,
-      senderId: "john",
-      senderName: "John Doe",
-      senderInitials: "JD",
-      text: "I'm good too! Just working on some new features for the app. It's coming along nicely!",
-      time: "2:32 PM"
-    },
-    {
-      id: 4,
-      senderId: "currentUser",
-      senderName: "You",
-      text: "That's awesome! Can't wait to see the final result. Keep up the great work! 🚀",
-      time: "2:33 PM"
-    }
-  ];
+const Messages = ({ messages = [], loading }) => {
+  if (loading) {
+    return <div className="text-center text-gray-400">Loading messages...</div>;
+  }
 
-  if (!selectedChat) {
+  if (messages.length === 0) {
     return <NoChatSelected />;
   }
 
   return (
     <div className="flex flex-col space-y-4">
-      {demoMessages.map(message => (
-        <Message key={message.id} message={message} />
+      {messages.map((message) => (
+        <Message key={message._id} message={message} />
       ))}
     </div>
   );

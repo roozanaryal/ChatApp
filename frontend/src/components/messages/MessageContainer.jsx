@@ -1,21 +1,15 @@
-import React, { useEffect } from "react"; // useState is not needed if using Zustand for selectedChat
+import React, { useEffect } from "react";
 import Messages from "./Messages";
 import MessageInput from "./MessageInput";
-import useConversation from "../../zustand/useConversation"; // Correct path
+import useConversation from "../../zustand/useConversation";
+import useGetMessages from "../../hooks/useGetMessages";
 // import { set } from "mongoose";
 
 const MessageContainer = () => {
-  // Correct way to use the Zustand hook:
-  // Destructure the specific state and actions you need from the store.
-  // We're taking 'selectedConversation' and 'setSelectedConversation' from the store
-  // and aliasing them to 'selectedChat' and 'setSelectedChat' for consistency with
-  // your existing component logic.
   const { selectedConversation, setSelectedConversation } = useConversation();
+  const { messages, loading } = useGetMessages();
 
-  // If you prefer to keep the names 'selectedChat' and 'setSelectedChat'
-  // for readability within this component, you can alias them:
   const selectedChat = selectedConversation;
-  // const setSelectedChat = setSelectedConversation; // You don't actually use setSelectedChat here, so it's not strictly necessary to alias it.
   useEffect(() => {
     //cleanup function to reset selected chat when component unmounts
     return () => setSelectedConversation(null);
@@ -52,7 +46,13 @@ const MessageContainer = () => {
           {/* Messages */}
           {/* Ensure Messages component can handle selectedChat.messages if it expects messages prop */}
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
-            <Messages selectedChat={selectedChat} />
+            {loading ? (
+              <div className='flex justify-center items-center h-full'>
+                <span className='loading loading-spinner'></span>
+              </div>
+            ) : (
+              <Messages messages={messages} />
+            )}
           </div>
 
           {/* Message Input */}

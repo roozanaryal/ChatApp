@@ -1,7 +1,7 @@
 import useSignup from "../../hooks/useSignup";
 import GenderCheckbox from "./GenderCheckbox";
 import { useState } from "react";
-
+import { useNavigate } from "react-router-dom";
 // import { Link } from "react-router-dom";
 
 const Signup = () => {
@@ -14,6 +14,7 @@ const Signup = () => {
   });
 
   const { signup, loading } = useSignup();
+  const navigate = useNavigate();
 
   const handleGenderChange = (gender) => {
     setInputs({ ...inputs, gender });
@@ -30,16 +31,14 @@ const Signup = () => {
     
     try {
       await signup(trimmedInputs);
-      
-      // If signup is successful, you might want to redirect to login or home page
-      // For example, using react-router-dom:
-      // navigate('/login');
-      
+      // Redirect to home on successful signup
+      navigate("/");
     } catch (error) {
       // Error is already handled in the useSignup hook
       console.error('Signup failed:', error);
     }
   };
+
   return (
     <div className="w-full max-w-md mx-auto px-4">
       {/* Glass effect container */}

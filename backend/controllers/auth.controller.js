@@ -1,6 +1,6 @@
 import User from "../models/user.model.js";
 import bcrypt from "bcryptjs";
-import { generateTokenAndSetCookie } from "../utils/generateToken.js";
+import { generateToken } from "../utils/generateToken.js";
 
 export const signup = async (req, res) => {
   try {
@@ -38,13 +38,14 @@ export const signup = async (req, res) => {
 
     if (newUser) {
       await newUser.save();
-      generateTokenAndSetCookie(newUser._id, res);
+      const token = generateToken(newUser._id);
 
       res.status(201).json({
         _id: newUser._id,
         fullName: newUser.fullName,
         username: newUser.username,
         profilePic: newUser.profilePic,
+        token,
       });
     } else {
       res.status(400).json({ error: "Invalid user data" });
@@ -82,35 +83,30 @@ export const login = async (req, res) => {
         message: "Invalid username or password",
       });
     }
+    console.log(user);
 
-    generateTokenAndSetCookie(user._id, res);
+    const token = generateToken(user._id);
 
-    console.log(req.cookies.jwt)
 
     res.status(200).json({
-      message: "Login successful",
       _id: user._id,
       fullName: user.fullName,
       username: user.username,
       profilePic: user.profilePic,
-      gender: user.gender,
+      token,
     });
   } catch (error) {
     res.status(500).json({
       message: "Something went wrong",
+      error: error.message,
     });
   }
 };
 
-export const logout = async (req, res) => {
-    try {
-        res.clearCookie("jwt");
-        res.status(200).json({
-            message: "Logout successful"
-        });
-    } catch (error) {
-        res.status(500).json({
-            message: "Something went wrong"
-        });
-    }
-}
+export const logout = (req, res) => {
+  try {
+    res.status(200).json({ message: "Logged out successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
