@@ -4,7 +4,7 @@ const { protect } = require('../middleware/auth');
 const { getUserForSidebar } = require('../controllers/user.controller');
 
 // Get all users (protected route)
-router.get('/', protect, getUserForSidebar);
+router.get('/users', protect, getUserForSidebar);
 
 // Get user by ID (protected route)
 router.get('/:id', protect, getUserById);

@@ -9,7 +9,13 @@ export default function useGetConversation() {
     const getConversation = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${baseUrl}/api/users`);
+        const res = await fetch(`${baseUrl}/api/user`,{
+          method:"GET",
+          headers:{
+            "Content-Type":"application/json",
+            "Authorization":`Bearer ${localStorage.getItem("chat-token")}`
+          }
+        });
         const data = await res.json();
         if (data.error) {
           throw new Error(data.error);

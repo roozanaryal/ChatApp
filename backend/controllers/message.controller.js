@@ -60,6 +60,38 @@ export const sendMessage = async (req, res) => {
   }
 };
 
+export const createConversation = async (req, res) => {
+  try {
+    const senderId = req.user._id;
+    const { participantId } = req.body;
+    if (!senderId || !participantId) {
+      return res.status(400).json({
+        message: "Sender or participant ID is missing",
+        success: false,
+      });
+    }
+    let conversation = await Conversation.findOne({
+      participants: { $all: [senderId, participantId] },
+    });
+    if (!conversation) {
+      conversation = await Conversation.create({
+        participants: [senderId, participantId],
+      });
+    }
+    res.status(200).json({
+      message: "Conversation created or already exists",
+      conversation,
+      success: true,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error.message,
+      success: false,
+      error: true,
+    });
+  }
+};
+
 export const getMessages = async (req, res) => {
   try {
     const { id: userToChatId } = req.params;

@@ -7,7 +7,7 @@ import useGetConversation from "../../hooks/useGetConversation"
 
 
 const Sidebar = ({ onSelectChat }) => {
-  const { loading, conversations } = useGetConversation();
+  const { conversations } = useGetConversation();
 
   // This would be replaced with actual data from your backend
 

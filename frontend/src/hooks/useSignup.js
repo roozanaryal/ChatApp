@@ -28,6 +28,7 @@ const useSignup = () => {
             method: "POST",
             headers: {
                "Content-Type": "application/json",
+               ...(localStorage.getItem("chat-token") ? { "Authorization": `Bearer ${localStorage.getItem("chat-token")}` } : {})
             },
             body: JSON.stringify({
                fullName: fullName.trim(),
