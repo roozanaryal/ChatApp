@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useConversation from "../../zustand/useConversation";
 import SearchInput from "./SearchInput";
@@ -7,12 +7,18 @@ import useGetConversation from "../../hooks/useGetConversation"
 
 
 const Sidebar = ({ onSelectChat }) => {
-  const { conversations } = useGetConversation();
+  const { authUser, setAuthUser, setSelectedConversation, selectedConversation } = useConversation();
 
-  // This would be replaced with actual data from your backend
+  useEffect(() => {
+    const storedUser = localStorage.getItem("chat-user");
+    if (storedUser && !authUser) {
+      setAuthUser(JSON.parse(storedUser));
+    }
+  }, [authUser, setAuthUser]);
 
-  const [selectedConversation, setSelectedConversation] = useState(null);
-  const { authUser, setAuthUser } = useConversation();
+  const { users } = useGetConversation();
+
+
   const navigate = useNavigate();
 
   const handleLogout = () => {
@@ -24,14 +30,14 @@ const Sidebar = ({ onSelectChat }) => {
   };
 
   const handleSelectConversation = (conversation) => {
-    setSelectedConversation(conversation);
+    setSelectedConversation(conversation); // Zustand global state
     if (onSelectChat) {
       onSelectChat(conversation);
     }
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full backdrop-blur-md bg-black/30 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.37)] border border-white/10">
       {/* Sidebar Header */}
       <div className="px-4 py-3 border-b border-white/10">
         <h1 className="text-xl font-bold text-white">Messages</h1>
@@ -42,16 +48,27 @@ const Sidebar = ({ onSelectChat }) => {
         <SearchInput />
       </div>
 
-      {/* Conversations */}
-      <div className="flex-1 overflow-auto">
+      {/* Users List */}
+      <div className="flex-1 overflow-auto bg-black/10 rounded-2xl m-2">
         <div className="px-2 py-2 space-y-2">
-          {conversations.map((conversation) => (
-            <Conversation
-              key={conversation.id}
-              conversation={conversation}
-              isSelected={selectedConversation?.id === conversation.id}
-              onClick={handleSelectConversation}
-            />
+          {users.map((user) => (
+            <div
+              key={user._id}
+              className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition
+                ${selectedConversation?._id === user._id ? 'bg-purple-900/60' : 'hover:bg-purple-900/40'}`}
+
+              onClick={() => handleSelectConversation(user)}
+            >
+              <div className="w-8 h-8 rounded-full bg-purple-500/40 flex items-center justify-center">
+                <span className="text-sm font-medium text-white">
+                  {user.fullName ? user.fullName[0].toUpperCase() : user.username[0].toUpperCase()}
+                </span>
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-sm font-medium text-white truncate">{user.fullName || user.username}</h3>
+                <p className="text-xs text-gray-400 truncate">@{user.username}</p>
+              </div>
+            </div>
           ))}
         </div>
       </div>

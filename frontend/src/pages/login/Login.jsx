@@ -1,11 +1,21 @@
 import React, { useState } from "react";
 import useLogin from "../../hooks/useLogin";
+import { useNavigate } from "react-router-dom";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const { loading, login } = useLogin();
+  const navigate = useNavigate();
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    const result = await login(username, password);
+    if (result && result._id) {
+      navigate('/home');
+    }
+  };
 
   return (
     <div className="w-full max-w-md mx-auto px-4">
@@ -20,7 +30,7 @@ const Login = () => {
         </div>
 
         {/* Login Form */}
-        <form className="space-y-3">
+        <form className="space-y-3" onSubmit={handleLogin}>
           {/* Username Input */}
           <div>
             <label className="block text-gray-300 text-xs font-medium mb-1 drop-shadow">
@@ -52,7 +62,7 @@ const Login = () => {
           {/* Login Button */}
           <button
             type="submit"
-            onClick={() => login(username, password)}
+
             disabled={loading}
             className={`w-full py-2.5 mt-2 bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-black/40 transition-all duration-200 font-medium shadow-xl ${
               loading

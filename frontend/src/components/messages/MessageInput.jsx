@@ -1,17 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
+import useConversation from "../../zustand/useConversation";
+import axios from "axios";
+import { baseUrl } from "../../hooks/useSignup";
+import toast from "react-hot-toast";
+
+import useGetMessages from "../../hooks/useGetMessages";
 
 const MessageInput = () => {
+  const [message, setMessage] = useState("");
+  const { selectedConversation, setMessages, messages } = useConversation();
+  const { refetch } = useGetMessages();
+
+  const handleSendMessage = async (e) => {
+    e.preventDefault();
+    if (!message.trim()) return;
+    if (!selectedConversation) {
+      toast.error("No conversation selected");
+      return;
+    }
+    try {
+      const token = localStorage.getItem("chat-token");
+      const res = await axios.post(
+        `${baseUrl}/api/messages/send/${selectedConversation._id}`,
+        {
+          message: message.trim(),
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setMessage("");
+      // Refetch messages from backend to ensure UI is up to date
+      refetch && refetch();
+    } catch (error) {
+      toast.error(error.response?.data?.error || error.message);
+    }
+  };
+
   return (
-    <form className="flex items-center gap-2">
+    <form className="flex items-center gap-2" onSubmit={handleSendMessage}>
       <div className="relative flex-1">
         <input
           type="text"
           placeholder="Type a message..."
           className="w-full px-4 py-2 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent backdrop-blur-sm transition-all text-sm pr-10"
+          value={message}
+          onChange={e => setMessage(e.target.value)}
         />
         <button
           type="button"
+          tabIndex={-1}
           className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-white transition-colors"
+          disabled
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -30,6 +72,7 @@ const MessageInput = () => {
       <button
         type="submit"
         className="p-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white hover:from-purple-700 hover:to-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-black/40 transition-all duration-200 shadow-xl hover:shadow-purple-500/25"
+        onClick={handleSendMessage}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

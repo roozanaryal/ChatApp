@@ -32,7 +32,7 @@ const Signup = () => {
     try {
       await signup(trimmedInputs);
       // Redirect to home on successful signup
-      navigate("/");
+      navigate("/home");
     } catch (error) {
       // Error is already handled in the useSignup hook
       console.error('Signup failed:', error);

@@ -16,11 +16,11 @@ const MessageContainer = () => {
   }, [setSelectedConversation]);
 
   return (
-    <div className="flex flex-col h-full rounded-lg shadow-lg bg-gray-800 text-white">
+    <div className="flex flex-col h-full backdrop-blur-md bg-black/30 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.37)] border border-white/10 text-white">
       {selectedChat ? (
         <>
           {/* Chat Header */}
-          <div className="px-4 py-3 border-b border-white/10 flex items-center gap-3 bg-gray-700 rounded-t-lg">
+          <div className="px-4 py-3 border-b border-white/10 flex items-center gap-3 bg-black/20 rounded-t-3xl">
             <div className="w-10 h-10 rounded-full bg-purple-500/30 flex items-center justify-center text-lg font-bold text-purple-200">
               {/* Fallback for user initials, ensure selectedChat.fullName exists for reliable initials */}
               <span className="text-sm font-medium text-white">
@@ -56,7 +56,7 @@ const MessageContainer = () => {
           </div>
 
           {/* Message Input */}
-          <div className="p-4 border-t border-white/10 bg-gray-700 rounded-b-lg">
+          <div className="p-4 border-t border-white/10 bg-black/20 rounded-b-3xl">
             <MessageInput />
           </div>
         </>

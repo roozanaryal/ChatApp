@@ -8,33 +8,33 @@ const useGetMessages = () => {
   const [loading, setLoading] = useState(false);
   const { messages, setMessages, selectedConversation } = useConversation();
 
-  useEffect(() => {
-    const getMessages = async () => {
-      if (!selectedConversation) return;
-      setLoading(true);
-      try {
-        const token = localStorage.getItem("chat-token");
-        const res = await axios.get(
-          `${baseUrl}/api/messages/${selectedConversation._id}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        const data = res.data;
-        if (data.error) throw new Error(data.error);
-        setMessages(data);
-      } catch (error) {
-        toast.error(error.message);
-      } finally {
-        setLoading(false);
-      }
-    };
+  const getMessages = async () => {
+    if (!selectedConversation) return;
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("chat-token");
+      const res = await axios.get(
+        `${baseUrl}/api/messages/${selectedConversation._id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      const data = res.data;
+      if (data.error) throw new Error(data.error);
+      setMessages(data);
+    } catch (error) {
+      toast.error(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     if (selectedConversation?._id) getMessages();
-    getMessages();
   }, [selectedConversation, setMessages]);
-  return { messages, loading };
+
+  return { messages, loading, refetch: getMessages };
 };
 export default useGetMessages;
