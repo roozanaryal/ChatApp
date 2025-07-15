@@ -27,6 +27,8 @@ const Sidebar = ({ onSelectChat }) => {
     setAuthUser(null);
     // Redirect to login page
     navigate("/login", { replace: true });
+    // Force reload to reset all state
+    window.location.reload();
   };
 
   const handleSelectConversation = (conversation) => {
