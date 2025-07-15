@@ -16,6 +16,7 @@ const useSendMessage = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("chat-token")}`,
           },
           body: JSON.stringify({ message }),
         }

@@ -6,7 +6,6 @@ const Message = ({ message }) => {
   const { authUser } = useAuthContext();
   const { selectedConversation } = useConversation();
   const isSender = message.senderId === authUser._id;
-  const chatMate = isSender ? authUser : selectedConversation;
   const chatTime = new Date(message.createdAt).toLocaleTimeString([], {
     hour: "2-digit",
     minute: "2-digit",
@@ -15,7 +14,7 @@ const Message = ({ message }) => {
   return isSender ? (
     <SentMessage message={message} time={chatTime} />
   ) : (
-    <ReceivedMessage message={message} time={chatTime} user={chatMate} />
+    <ReceivedMessage message={message} time={chatTime} user={selectedConversation} />
   );
 };
 
@@ -39,10 +38,13 @@ const SentMessage = ({ message, time }) => {
 };
 
 const ReceivedMessage = ({ message, time, user }) => {
+  // Get the first letter of the user's full name, fallback to "U"
+  const initial = user?.fullName ? user.fullName.charAt(0).toUpperCase() : "U";
+
   return (
     <div className="flex items-start gap-2.5">
       <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center flex-shrink-0">
-        <img src={user?.profilePic} alt="user avatar" className="w-full h-full rounded-full object-cover" />
+        <span className="text-sm font-medium text-white">{initial}</span>
       </div>
       <div className="flex flex-col gap-1 min-w-0 max-w-[80%]">
         <div className="flex items-center gap-2">

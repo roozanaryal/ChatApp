@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
-import Messages from "./Messages";
+import Message from "./Message";
 import MessageInput from "./MessageInput";
 import useConversation from "../../zustand/useConversation";
 import useGetMessages from "../../hooks/useGetMessages";
-// import { set } from "mongoose";
-
 const MessageContainer = () => {
   const { selectedConversation, setSelectedConversation } = useConversation();
   const { messages, loading } = useGetMessages();
@@ -19,10 +17,8 @@ const MessageContainer = () => {
     <div className="flex flex-col h-full backdrop-blur-md bg-black/30 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.37)] border border-white/10 text-white">
       {selectedChat ? (
         <>
-          {/* Chat Header */}
           <div className="px-4 py-3 border-b border-white/10 flex items-center gap-3 bg-black/20 rounded-t-3xl">
             <div className="w-10 h-10 rounded-full bg-purple-500/30 flex items-center justify-center text-lg font-bold text-purple-200">
-              {/* Fallback for user initials, ensure selectedChat.fullName exists for reliable initials */}
               <span className="text-sm font-medium text-white">
                 {selectedChat.fullName
                   ? selectedChat.fullName
@@ -51,7 +47,15 @@ const MessageContainer = () => {
                 <span className='loading loading-spinner'></span>
               </div>
             ) : (
-              <Messages messages={messages} />
+              Array.isArray(messages) && messages.length > 0 ? (
+                <div className="space-y-4">
+                  {messages.map((message, idx) => (
+                    <Message key={message._id || idx} message={message} />
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center text-gray-400">No messages yet.</div>
+              )
             )}
           </div>
 
@@ -64,9 +68,6 @@ const MessageContainer = () => {
         // Initial state when no chat is selected
         <div className="flex-1 flex items-center justify-center text-gray-400 text-lg">
           <p>Select a chat to start messaging</p>
-          {/* You might want to remove <Messages selectedChat={selectedChat} /> here
-              if Messages component expects a valid chat object and not null/undefined.
-              If it gracefully handles null, it's fine. */}
         </div>
       )}
     </div>

@@ -1,42 +1,23 @@
-import React, { useState } from "react";
+import { useState } from "react";
+import useSendMessage from "../../hooks/useSendMessage";
+import useGetMessages from "../../hooks/useGetMessages"; // for refetch
 import useConversation from "../../zustand/useConversation";
-import axios from "axios";
-import { baseUrl } from "../../hooks/useSignup";
-import toast from "react-hot-toast";
-
-import useGetMessages from "../../hooks/useGetMessages";
 
 const MessageInput = () => {
-  const [message, setMessage] = useState("");
-  const { selectedConversation, setMessages, messages } = useConversation();
+  const { sendMessage } = useSendMessage();
+  const { selectedConversation } = useConversation();
   const { refetch } = useGetMessages();
+
+  const [message, setMessage] = useState("");
 
   const handleSendMessage = async (e) => {
     e.preventDefault();
-    if (!message.trim()) return;
-    if (!selectedConversation) {
-      toast.error("No conversation selected");
-      return;
-    }
-    try {
-      const token = localStorage.getItem("chat-token");
-      const res = await axios.post(
-        `${baseUrl}/api/messages/send/${selectedConversation._id}`,
-        {
-          message: message.trim(),
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      setMessage("");
-      // Refetch messages from backend to ensure UI is up to date
-      refetch && refetch();
-    } catch (error) {
-      toast.error(error.response?.data?.error || error.message);
-    }
+    if (!message.trim() || !selectedConversation) return;
+    await sendMessage(selectedConversation._id, message);
+
+    setMessage("");
+    // Refetch messages after sending
+    refetch && refetch();
   };
 
   return (
@@ -47,7 +28,7 @@ const MessageInput = () => {
           placeholder="Type a message..."
           className="w-full px-4 py-2 rounded-xl bg-white/10 border border-white/10 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-transparent backdrop-blur-sm transition-all text-sm pr-10"
           value={message}
-          onChange={e => setMessage(e.target.value)}
+          onChange={(e) => setMessage(e.target.value)}
         />
         <button
           type="button"
