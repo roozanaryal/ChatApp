@@ -1,40 +1,30 @@
 import { useEffect, useState } from "react";
 import useConversation from "../zustand/useConversation";
-import axios from "axios";
-import { baseUrl } from "./useSignup";
 import toast from "react-hot-toast";
+import { baseUrl } from "./useSignup";
 
 const useGetMessages = () => {
-  const [loading, setLoading] = useState(false);
-  const { messages, setMessages, selectedConversation } = useConversation();
+	const [loading, setLoading] = useState(false);
+	const { messages, setMessages, selectedConversation } = useConversation();
 
-  const getMessages = async () => {
-    if (!selectedConversation) return;
-    setLoading(true);
-    try {
-      const token = localStorage.getItem("chat-token");
-      const res = await axios.get(
-        `${baseUrl}/api/messages/${selectedConversation._id}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const data = res.data;
-      if (data.error) throw new Error(data.error);
-      setMessages(data);
-    } catch (error) {
-      toast.error(error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
+	useEffect(() => {
+		const getMessages = async () => {
+			setLoading(true);
+			try {
+				const res = await fetch(`${baseUrl}/api/messages/${selectedConversation._id}`);
+				const data = await res.json();
+				if (data.error) throw new Error(data.error);
+				setMessages(data);
+			} catch (error) {
+				toast.error(error.message);
+			} finally {
+				setLoading(false);
+			}
+		};
 
-  useEffect(() => {
-    if (selectedConversation?._id) getMessages();
-  }, [selectedConversation, setMessages]);
+		if (selectedConversation?._id) getMessages();
+	}, [selectedConversation?._id, setMessages]);
 
-  return { messages, loading, refetch: getMessages };
+	return { messages, loading };
 };
 export default useGetMessages;

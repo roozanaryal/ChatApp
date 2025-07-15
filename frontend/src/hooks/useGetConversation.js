@@ -12,7 +12,7 @@ export default function useGetConversation() {
     const getUsers = async () => {
       setLoading(true);
       try {
-        const res = await fetch(`${baseUrl}/api/user`, {
+        const res = await fetch(`${baseUrl}/api/users/`, {
           method: "GET",
           headers: {
             "Content-Type": "application/json",

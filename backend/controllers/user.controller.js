@@ -21,4 +21,6 @@ const getUserForSidebar = async (req, res) => {
   }
 };
 
+
+
 export default getUserForSidebar;

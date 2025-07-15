@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import useConversation from "../../zustand/useConversation";
 import SearchInput from "./SearchInput";
-import Conversation from "./Conversation";
+// import Conversation from "./Conversation";
 import useGetConversation from "../../hooks/useGetConversation"
 
 

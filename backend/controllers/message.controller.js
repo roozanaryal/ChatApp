@@ -6,8 +6,8 @@ export const sendMessage = async (req, res) => {
   try {
     const { message } = req.body;
     const { id: reciverId } = req.params;
-    // const senderId = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET).id;
-    const senderId = req.user._id; //as i have set in protect route
+    const senderId = jwt.verify(req.cookies.jwt, process.env.JWT_SECRET).id;
+    // const senderId = req.user._id; //as i have set in protect route
     
 
     if (!senderId || !reciverId) {
