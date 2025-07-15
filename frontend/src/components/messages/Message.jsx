@@ -5,11 +5,21 @@ import useConversation from "../../zustand/useConversation";
 const Message = ({ message }) => {
   const { authUser } = useAuthContext();
   const { selectedConversation } = useConversation();
-  const isSender = message.senderId === authUser._id;
-  const chatTime = new Date(message.createdAt).toLocaleTimeString([], {
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+
+  if (!message || !authUser) return null;
+
+  // Support both senderId and sender (backend may use either)
+  const senderId = message.senderId || message.sender;
+  const isSender = senderId === authUser._id;
+
+  let chatTime = '';
+  if (message.createdAt) {
+    const date = new Date(message.createdAt);
+    chatTime = isNaN(date.getTime()) ? '' : date.toLocaleTimeString([], {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
+  }
 
   return isSender ? (
     <SentMessage message={message} time={chatTime} />

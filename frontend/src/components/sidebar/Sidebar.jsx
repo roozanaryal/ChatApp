@@ -26,7 +26,7 @@ const Sidebar = ({ onSelectChat }) => {
     localStorage.removeItem("chat-user");
     setAuthUser(null);
     // Redirect to login page
-    navigate("/login");
+    navigate("/login", { replace: true });
   };
 
   const handleSelectConversation = (conversation) => {
@@ -77,7 +77,7 @@ const Sidebar = ({ onSelectChat }) => {
       <div className="p-4 border-t border-white/10">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-            <span className="text-sm font-medium text-white">{authUser?.fullName || authUser?.username[0].toUpperCase()}</span>
+            <span className="text-sm font-medium text-white">{ authUser?.username[0].toUpperCase()}</span>
           </div>
           <div className="flex-1">
             <h3 className="text-sm font-medium text-white">{authUser?.fullName || authUser?.username}</h3>

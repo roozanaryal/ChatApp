@@ -13,7 +13,7 @@ const Login = () => {
     e.preventDefault();
     const result = await login(username, password);
     if (result && result._id) {
-      navigate('/home');
+      navigate('/');
     }
   };
 
