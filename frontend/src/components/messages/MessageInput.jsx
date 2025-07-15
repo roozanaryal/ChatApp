@@ -13,7 +13,7 @@ const MessageInput = () => {
   const handleSendMessage = async (e) => {
     e.preventDefault();
     if (!message.trim() || !selectedConversation) return;
-    await sendMessage(selectedConversation._id, message);
+    await sendMessage(message);
 
     setMessage("");
     // Refetch messages after sending
@@ -53,7 +53,6 @@ const MessageInput = () => {
       <button
         type="submit"
         className="p-2 rounded-xl bg-gradient-to-r from-purple-600 to-fuchsia-600 text-white hover:from-purple-700 hover:to-fuchsia-700 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:ring-offset-2 focus:ring-offset-black/40 transition-all duration-200 shadow-xl hover:shadow-purple-500/25"
-        onClick={handleSendMessage}
       >
         <svg
           xmlns="http://www.w3.org/2000/svg"

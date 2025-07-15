@@ -14,7 +14,11 @@ const Message = ({ message }) => {
   return isSender ? (
     <SentMessage message={message} time={chatTime} />
   ) : (
-    <ReceivedMessage message={message} time={chatTime} user={selectedConversation} />
+    <ReceivedMessage
+      message={message}
+      time={chatTime}
+      user={selectedConversation}
+    />
   );
 };
 
@@ -30,7 +34,7 @@ const SentMessage = ({ message, time }) => {
           <span className="text-white text-sm font-medium">You</span>
         </div>
         <div className="bg-gradient-to-r from-purple-600 to-fuchsia-600 px-4 py-2 rounded-2xl rounded-tr-none text-white text-sm">
-          {message.text}
+          {message.message}
         </div>
       </div>
     </div>
@@ -48,11 +52,13 @@ const ReceivedMessage = ({ message, time, user }) => {
       </div>
       <div className="flex flex-col gap-1 min-w-0 max-w-[80%]">
         <div className="flex items-center gap-2">
-          <span className="text-white text-sm font-medium">{user?.fullName}</span>
+          <span className="text-white text-sm font-medium">
+            {user?.fullName}
+          </span>
           <span className="text-gray-400 text-xs">{time}</span>
         </div>
         <div className="bg-white/10 px-4 py-2 rounded-2xl rounded-tl-none text-white text-sm">
-          {message.text}
+          {message.message}
         </div>
       </div>
     </div>

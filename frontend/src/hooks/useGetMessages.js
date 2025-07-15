@@ -23,8 +23,15 @@ const useGetMessages = () => {
           }
         );
         const data = await res.json();
+        // console.log('Fetched messages response:', data); // Debug log
+        if (!res.ok) {
+          throw new Error(data.message || 'Failed to fetch messages');
+        }
+        // Handle both array and object (with messages property) responses
         if (Array.isArray(data)) {
           setMessages(data);
+        } else if (Array.isArray(data.messages)) {
+          setMessages(data.messages);
         } else {
           setMessages([]);
         }
