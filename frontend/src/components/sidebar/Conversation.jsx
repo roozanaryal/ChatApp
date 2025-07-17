@@ -1,5 +1,8 @@
+import { useSocketContext } from "../../context/SocketContext";
+
 const Conversation = ({ conversation, isSelected, onClick }) => {
-  
+  const { onlineUsers } = useSocketContext();
+  const isOnline = onlineUsers.includes(conversation._id);
   return (
     <div
       className={`flex items-center gap-3 p-2 rounded-xl ${
@@ -7,7 +10,11 @@ const Conversation = ({ conversation, isSelected, onClick }) => {
       } transition-colors cursor-pointer`}
       onClick={() => onClick && onClick(conversation)}
     >
-      <div className={`w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center relative ${conversation?.isOnline ? 'border-2 border-green-500' : ''}`}>
+      <div
+        className={`w-10 h-10 rounded-full bg-purple-500/20 flex items-center justify-center relative ${
+          isOnline ? "border-2 border-green-500" : ""
+        }`}
+      >
         <span className="text-sm font-medium text-white">
           {conversation?.userInitials || "JD"}
         </span>
@@ -20,7 +27,9 @@ const Conversation = ({ conversation, isSelected, onClick }) => {
           {conversation?.userName || "John Doe"}
         </h3>
         <p className="text-xs text-gray-400 truncate">
-          {conversation?.lastMessage || "Hey, how are you doing?"}
+          {conversation?.lastMessage?.message || ""}
+          {/* useGetConversation */}
+          {/* {console.log(conversation)} */}
         </p>
       </div>
       {conversation?.unreadCount > 0 && (

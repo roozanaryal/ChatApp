@@ -1,6 +1,7 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
-import jwt from "jsonwebtoken";
+import { getReciverSocketId } from "../socket/socket.js";
+// import jwt from "jsonwebtoken";
 
 export const sendMessage = async (req, res) => {
   try {
@@ -46,6 +47,10 @@ export const sendMessage = async (req, res) => {
     await Promise.all([conversation.save(), newMessage.save()]);
 
     //SOCKET IO Functionality
+    const reciverSocketId = getReciverSocketId(reciverId);
+    if (reciverSocketId) {
+      io.to(reciverSocketId).emit("newMessage", newMessage);
+    }
 
     res.status(200).json(newMessage);
   } catch (error) {

@@ -11,6 +11,7 @@ const router = express.Router();
 // Message endpoints
 router.get("/:id", protectRoute, getMessages);
 router.post("/send/:id", protectRoute, sendMessage);
+// router.get("/last/:id", protectRoute, last);
 // Conversation endpoints
 // router.post("/conversation", protectRoute, createConversation);
 

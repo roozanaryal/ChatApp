@@ -3,7 +3,9 @@ import Message from "./Message";
 import MessageInput from "./MessageInput";
 import useConversation from "../../zustand/useConversation";
 import useGetMessages from "../../hooks/useGetMessages";
+import useListenMessages from "../../hooks/useListenMessages";
 const MessageContainer = () => {
+  useListenMessages();
   const { selectedConversation, setSelectedConversation } = useConversation();
   const { messages, loading } = useGetMessages();
 

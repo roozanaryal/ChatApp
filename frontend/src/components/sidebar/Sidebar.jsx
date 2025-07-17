@@ -6,7 +6,6 @@ import SearchInput from "./SearchInput";
 import useGetConversation from "../../hooks/useGetConversation"
 import Conversation from "./Conversation";
 import { useSocketContext } from "../../context/SocketContext";
-import useGetMessages from "../../hooks/useGetMessages";
 
 const Sidebar = ({ onSelectChat }) => {
   const { authUser, setAuthUser, setSelectedConversation, selectedConversation } = useConversation();
@@ -20,7 +19,6 @@ const Sidebar = ({ onSelectChat }) => {
 
   const { users } = useGetConversation();
   const { onlineUsers } = useSocketContext();
-  const { messages } = useGetMessages();
 
   const navigate = useNavigate();
 
@@ -57,15 +55,8 @@ const Sidebar = ({ onSelectChat }) => {
       <div className="flex-1 overflow-auto bg-black/10 rounded-2xl m-2">
         <div className="px-2 py-2 space-y-2">
           {users.map((user) => {
-            // Find the last message exchanged with this user
-            const lastMsg = messages
-              .filter(
-                (msg) =>
-                  (msg.senderId === user._id || msg.receiverId === user._id) ||
-                  (msg.sender === user._id || msg.receiver === user._id)
-              )
-              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
             const isOnline = onlineUsers.includes(user._id);
+            const lastMsg = user.lastMessage;
             return (
               <Conversation
                 key={user._id}

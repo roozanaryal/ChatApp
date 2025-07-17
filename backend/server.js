@@ -7,7 +7,7 @@ import connectDB from "./db/connectDB.js";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.route.js";
 import cors from "cors";
-import { app, server } from "./socket/socket.js";
+import { app, io, server } from "./socket/socket.js";
 
 // Load environment variables
 dotenv.config();
@@ -52,16 +52,10 @@ const startServer = async () => {
     await connectDB();
     server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
-    });
-
-    // Handle server errors
-    server.on("error", (error) => {
-      console.error("Server error:", error);
-      process.exit(1);
+      console.log(`Socket.IO server is running`);
     });
   } catch (error) {
-    console.error("Failed to start server:", error);
-    process.exit(1);
+    console.error("Error starting server:", error);
   }
 };
 
