@@ -5,7 +5,7 @@ const AuthContext = createContext();
 export const AuthContextProvider = ({ children }) => {
   const getInitialUser = () => {
     try {
-      return JSON.parse(localStorage.getItem('chat-user')) || null;
+      return JSON.parse(localStorage.getItem("chat-user")) || null;
     } catch {
       return null;
     }
@@ -17,9 +17,9 @@ export const AuthContextProvider = ({ children }) => {
   const setAuthUser = (user) => {
     setAuthUserState(user);
     if (user) {
-      localStorage.setItem('chat-user', JSON.stringify(user));
+      localStorage.setItem("chat-user", JSON.stringify(user));
     } else {
-      localStorage.removeItem('chat-user');
+      localStorage.removeItem("chat-user");
     }
   };
 
@@ -28,8 +28,8 @@ export const AuthContextProvider = ({ children }) => {
     const onStorage = () => {
       setAuthUserState(getInitialUser());
     };
-    window.addEventListener('storage', onStorage);
-    return () => window.removeEventListener('storage', onStorage);
+    window.addEventListener("storage", onStorage);
+    return () => window.removeEventListener("storage", onStorage);
   }, []);
 
   return (

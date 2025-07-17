@@ -7,20 +7,20 @@ import connectDB from "./db/connectDB.js";
 import cookieParser from "cookie-parser";
 import userRoutes from "./routes/user.route.js";
 import cors from "cors";
+import { app, server } from "./socket/socket.js";
 
 // Load environment variables
 dotenv.config();
 
 const PORT = process.env.PORT || 5000;
-const app = express();
 
 // Middleware
-app.use(cors({
-  origin: "http://localhost:3000",
-  credentials: true,
-}));
-
-
+app.use(
+  cors({
+    origin: "http://localhost:3000",
+    credentials: true,
+  })
+);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -32,31 +32,35 @@ app.use("/api/messages", messageRoutes);
 app.use("/api/users", userRoutes);
 
 // Health check endpoint
-app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'ok', dbStatus: mongoose.connection.readyState });
+app.get("/health", (req, res) => {
+  res
+    .status(200)
+    .json({ status: "ok", dbStatus: mongoose.connection.readyState });
 });
 
 // Error handling middleware
 app.use((err, req, res, next) => {
   console.error(err.stack);
-  res.status(500).json({ message: 'Something went wrong!', error: err.message });
+  res
+    .status(500)
+    .json({ message: "Something went wrong!", error: err.message });
 });
 
 // Start the server
 const startServer = async () => {
   try {
     await connectDB();
-    const server = app.listen(PORT, () => {
+    server.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
 
     // Handle server errors
-    server.on('error', (error) => {
-      console.error('Server error:', error);
+    server.on("error", (error) => {
+      console.error("Server error:", error);
       process.exit(1);
     });
   } catch (error) {
-    console.error('Failed to start server:', error);
+    console.error("Failed to start server:", error);
     process.exit(1);
   }
 };

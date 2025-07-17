@@ -27,7 +27,32 @@ export default function useGetConversation() {
         const filteredUsers = data.filter(
           (user) => user._id !== authUser?._id && user.username !== authUser?.username
         );
-        setUsers(filteredUsers);
+
+        // Fetch last message for each user in parallel
+        const usersWithLastMessage = await Promise.all(filteredUsers.map(async (user) => {
+          try {
+            const res = await fetch(`${baseUrl}/api/messages/last/${user._id}` , {
+              method: "GET",
+              headers: {
+                "Content-Type": "application/json",
+                "Authorization": `Bearer ${localStorage.getItem("chat-token")}`
+              }
+            });
+            const msgData = await res.json();
+            if (msgData && msgData.message) {
+              return {
+                ...user,
+                lastMessage: msgData.message.message,
+                lastMessageTime: msgData.message.createdAt
+              };
+            } else {
+              return user;
+            }
+          } catch {
+            return user;
+          }
+        }));
+        setUsers(usersWithLastMessage);
       } catch (error) {
         toast(error.message);
       } finally {

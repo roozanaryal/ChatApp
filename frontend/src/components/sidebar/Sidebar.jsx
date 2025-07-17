@@ -4,7 +4,9 @@ import useConversation from "../../zustand/useConversation";
 import SearchInput from "./SearchInput";
 // import Conversation from "./Conversation";
 import useGetConversation from "../../hooks/useGetConversation"
-
+import Conversation from "./Conversation";
+import { useSocketContext } from "../../context/SocketContext";
+import useGetMessages from "../../hooks/useGetMessages";
 
 const Sidebar = ({ onSelectChat }) => {
   const { authUser, setAuthUser, setSelectedConversation, selectedConversation } = useConversation();
@@ -17,7 +19,8 @@ const Sidebar = ({ onSelectChat }) => {
   }, [authUser, setAuthUser]);
 
   const { users } = useGetConversation();
-
+  const { onlineUsers } = useSocketContext();
+  const { messages } = useGetMessages();
 
   const navigate = useNavigate();
 
@@ -53,25 +56,37 @@ const Sidebar = ({ onSelectChat }) => {
       {/* Users List */}
       <div className="flex-1 overflow-auto bg-black/10 rounded-2xl m-2">
         <div className="px-2 py-2 space-y-2">
-          {users.map((user) => (
-            <div
-              key={user._id}
-              className={`flex items-center gap-3 p-2 rounded-lg cursor-pointer transition
-                ${selectedConversation?._id === user._id ? 'bg-purple-900/60' : 'hover:bg-purple-900/40'}`}
-
-              onClick={() => handleSelectConversation(user)}
-            >
-              <div className="w-8 h-8 rounded-full bg-purple-500/40 flex items-center justify-center">
-                <span className="text-sm font-medium text-white">
-                  {user.fullName ? user.fullName[0].toUpperCase() : user.username[0].toUpperCase()}
-                </span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <h3 className="text-sm font-medium text-white truncate">{user.fullName || user.username}</h3>
-                <p className="text-xs text-gray-400 truncate">@{user.username}</p>
-              </div>
-            </div>
-          ))}
+          {users.map((user) => {
+            // Find the last message exchanged with this user
+            const lastMsg = messages
+              .filter(
+                (msg) =>
+                  (msg.senderId === user._id || msg.receiverId === user._id) ||
+                  (msg.sender === user._id || msg.receiver === user._id)
+              )
+              .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))[0];
+            const isOnline = onlineUsers.includes(user._id);
+            return (
+              <Conversation
+                key={user._id}
+                conversation={{
+                  ...user,
+                  userName: user.fullName || user.username,
+                  userInitials: (user.fullName || user.username || "JD")
+                    .split(" ")
+                    .map((n) => n[0])
+                    .join("")
+                    .toUpperCase(),
+                  isOnline,
+                  lastMessage: lastMsg ? lastMsg.message : "",
+                  lastMessageTime: lastMsg ? new Date(lastMsg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "",
+                  unreadCount: 0, // You can enhance this if you track unread messages
+                }}
+                isSelected={selectedConversation?._id === user._id}
+                onClick={handleSelectConversation}
+              />
+            );
+          })}
         </div>
       </div>
 
