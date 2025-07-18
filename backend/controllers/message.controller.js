@@ -1,9 +1,10 @@
 import Conversation from "../models/conversation.model.js";
 import Message from "../models/message.model.js";
-import { getReciverSocketId } from "../socket/socket.js";
+import { getReciverSocketId, io } from "../socket/socket.js";
 // import jwt from "jsonwebtoken";
 
 export const sendMessage = async (req, res) => {
+  console.log("req.user in sendMessage:", req.user);
   try {
     const { message } = req.body;
     const { id: reciverId } = req.params;

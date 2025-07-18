@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import useConversation from "../../zustand/useConversation";
@@ -10,6 +10,13 @@ const MessageContainer = () => {
   const { messages, loading } = useGetMessages();
 
   const selectedChat = selectedConversation;
+  const bottomRef = useRef(null);
+
+  useEffect(() => {
+    // Auto-scroll to bottom when messages change
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [messages]);
+
   useEffect(() => {
     //cleanup function to reset selected chat when component unmounts
     return () => setSelectedConversation(null);
@@ -54,6 +61,7 @@ const MessageContainer = () => {
                   {messages.map((message, idx) => (
                     <Message key={message._id || idx} message={message} />
                   ))}
+                  <div ref={bottomRef} />
                 </div>
               ) : (
                 <div className="text-center text-gray-400">No messages yet.</div>

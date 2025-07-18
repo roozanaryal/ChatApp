@@ -16,8 +16,8 @@ export default function useGetConversation() {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
-            "Authorization": `Bearer ${localStorage.getItem("chat-token")}`
-          }
+            Authorization: `Bearer ${localStorage.getItem("chat-token")}`,
+          },
         });
         const data = await res.json();
         if (data.error) {
@@ -25,34 +25,10 @@ export default function useGetConversation() {
         }
         // Filter out the current user
         const filteredUsers = data.filter(
-          (user) => user._id !== authUser?._id && user.username !== authUser?.username
+          (user) =>
+            user._id !== authUser?._id && user.username !== authUser?.username
         );
-
-        // Fetch last message for each user in parallel
-        const usersWithLastMessage = await Promise.all(filteredUsers.map(async (user) => {
-          try {
-            const res = await fetch(`${baseUrl}/api/messages/last/${user._id}` , {
-              method: "GET",
-              headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${localStorage.getItem("chat-token")}`
-              }
-            });
-            const msgData = await res.json();
-            if (msgData && msgData.message) {
-              return {
-                ...user,
-                lastMessage: msgData.message.message,
-                lastMessageTime: msgData.message.createdAt
-              };
-            } else {
-              return user;
-            }
-          } catch {
-            return user;
-          }
-        }));
-        setUsers(usersWithLastMessage);
+        setUsers(filteredUsers);
       } catch (error) {
         toast(error.message);
       } finally {

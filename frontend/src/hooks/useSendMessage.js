@@ -1,6 +1,6 @@
 import { useState } from "react";
 import useConversation from "../zustand/useConversation";
-import toast from "react-hot-toast";
+// import toast from "react-hot-toast";
 import { baseUrl } from "./useSignup";
 
 const useSendMessage = () => {
@@ -22,7 +22,8 @@ const useSendMessage = () => {
         }
       );
       const data = await res.json();
-      if (data.error) throw new Error(data.error);
+      if (!res.ok)
+        throw new Error(data.message || data.error || "Failed to send message");
 
       // Ensure the new message is displayed immediately and correctly
       let newMessage = data;
@@ -43,7 +44,7 @@ const useSendMessage = () => {
       }
       setMessages([...messages, newMessage]);
     } catch (error) {
-      toast.error(error.message);
+      console.log(error.message);
     } finally {
       setLoading(false);
     }
