@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import Message from "./Message";
 import MessageInput from "./MessageInput";
 import useConversation from "../../zustand/useConversation";
@@ -52,20 +52,18 @@ const MessageContainer = () => {
           {/* Ensure Messages component can handle selectedChat.messages if it expects messages prop */}
           <div className="flex-1 overflow-y-auto p-4 custom-scrollbar">
             {loading ? (
-              <div className='flex justify-center items-center h-full'>
-                <span className='loading loading-spinner'></span>
+              <div className="flex justify-center items-center h-full">
+                <span className="loading loading-spinner"></span>
+              </div>
+            ) : Array.isArray(messages) && messages.length > 0 ? (
+              <div className="space-y-4">
+                {messages.map((message, idx) => (
+                  <Message key={message._id || idx} message={message} />
+                ))}
+                <div ref={bottomRef} />
               </div>
             ) : (
-              Array.isArray(messages) && messages.length > 0 ? (
-                <div className="space-y-4">
-                  {messages.map((message, idx) => (
-                    <Message key={message._id || idx} message={message} />
-                  ))}
-                  <div ref={bottomRef} />
-                </div>
-              ) : (
-                <div className="text-center text-gray-400">No messages yet.</div>
-              )
+              <div className="text-center text-gray-400">No messages yet.</div>
             )}
           </div>
 
