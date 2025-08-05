@@ -1,9 +1,8 @@
-import React from "react";
 import bgImage from "./assets/bg.jpg";
 import Signup from "./pages/signup/Signup.jsx";
 import Login from "./pages/login/Login.jsx";
 import Home from "./pages/home/Home.jsx";
-import { Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";``
 import { useAuthContext } from "./context/AuthContext.jsx";
 
 function App() {
